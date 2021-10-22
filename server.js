@@ -9,7 +9,7 @@ const uuid = require('./helpers/uuid.js');
 //creating instance of express
 const app = express();
 //setting the port that the server is listening on 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 //sets up the express app to handle data parsing 
 app.use(express.json());
