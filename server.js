@@ -3,6 +3,8 @@ const express = require("express");
 const path = require('path');
 const fs = require('fs');
 const db = require('./db/db.json');
+const uuid = require('./helpers/uuid.js');
+
 //creating instance of express
 const app = express();
 //setting the port that the server is listening on 
@@ -12,22 +14,50 @@ const PORT = 3001;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+//connects static middleware in the public folder
 app.use(express.static('public)'));
 
-
-//dirname is recognized by the path package as the current directory
-//This creates a path to the index.html file
-app.get('/', (req, res) =>
-  res.sendFile(path.join(__dirname, 'public/index.html'))
-);
-
 //This creates a path to the notes.html file
-app.get('/*', (req, res) =>
+app.get('/notes', (req, res) =>
   res.sendFile(path.join(__dirname, 'public/notes.html'))
 );
 
 //This gets the data in the db.json file
-app.get('/api', (req,res) => res.json(db));
+app.get('/api/notes', (req,res) => {
+    fs.readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
+    // res.json(db);
+});
+
+//This posts data to the db.json file
+app.post('/api/notes', (req, res) => {
+    const {title, text} = req.body;
+    const newNote = {
+        title, 
+        text, 
+        id: uuid(),
+    };
+    db.push(newNote);
+    //converts data to a string so it can be saved
+    const noteString = JSON.stringify(newNote);
+    //writes the string to a file
+    fs.writeFile('./db/db.json', noteString, (err) =>
+        err ? console.error(err): console.log("New note has been written to the JSON file.")
+    );
+
+    const response = {
+        status: 'success',
+        body: newNote,
+    }
+
+    res.status(201).json(response);
+});
+
+// BONUS app.delete 
+
+//This creates a path to the index.html file
+app.get('*', (req, res) =>
+  res.sendFile(path.join(__dirname, 'public/index.html'))
+);
 
 //This should be the last thing 
 app.listen(PORT, () =>
@@ -35,4 +65,4 @@ app.listen(PORT, () =>
 );
 
 
-// npm install uniqid 
+
