@@ -2,6 +2,7 @@
 const express = require("express");
 const path = require('path');
 const fs = require('fs');
+const util = require('util');
 const db = require('./db/db.json');
 const uuid = require('./helpers/uuid.js');
 
@@ -15,7 +16,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //connects static middleware in the public folder
-app.use(express.static('public)'));
+app.use(express.static('public'));
+
+//promise version of fs.readFile
+const readFromFile = util.promisify(fs.readFile);
 
 //This creates a path to the notes.html file
 app.get('/notes', (req, res) =>
@@ -24,8 +28,7 @@ app.get('/notes', (req, res) =>
 
 //This gets the data in the db.json file
 app.get('/api/notes', (req,res) => {
-    fs.readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
-    // res.json(db);
+    readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
 });
 
 //This posts data to the db.json file
@@ -36,8 +39,28 @@ app.post('/api/notes', (req, res) => {
         text, 
         id: uuid(),
     };
-    db.push(newNote);
-    //converts data to a string so it can be saved
+
+    // const writeToFile = (db, title, text) =>
+    //     fs.writeFile(db, JSON.stringify(title, text, null, 4), (err) =>
+    //     err ? console.error(err) : console.info(`\nData written to ${db}`)
+    // );
+
+    // const readAndAppend = (title, text, db) => {
+    //     fs.readFile(db, 'utf8', (err, data) => {
+    //       if (err) {
+    //         console.error(err);
+    //       } else {
+    //         const parsedData = JSON.parse(data);
+    //         parsedData.push(title, text);
+    //         writeToFile(db, parsedData);
+    //       }
+    //     });
+    //   };
+
+    // readAndAppend(newNote, './db/db.json');
+    //     res.json(`Tip added successfully `);
+
+  //converts data to a string so it can be saved
     const noteString = JSON.stringify(newNote);
     //writes the string to a file
     fs.writeFile('./db/db.json', noteString, (err) =>
