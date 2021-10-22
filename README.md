@@ -2,7 +2,9 @@
 ## Description 
   This project is an application that can be used to write and save notes. The application uses Express.js back end and will save and retreive note data from a JSON file.
   ## Screenshots 
-  
+  ![Screen Shot 2021-10-22 at 4 40 35 PM](https://user-images.githubusercontent.com/90110594/138526190-7a6cbd7c-2da3-4293-bdcb-7f87f15fb189.png)
+  ![Screen Shot 2021-10-22 at 4 39 06 PM](https://user-images.githubusercontent.com/90110594/138526198-ea203da4-c2d1-4354-a621-2b0168d19d18.png)
+
   ## Table of Contents 
   * [Installation](#installation)
   * [Usage](#usage)
